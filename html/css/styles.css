@@ -2,3 +2,20 @@ body{
     background-color: rgb(46, 46, 46);
     color: white;
 }
+h1{
+    font-size: 40px;
+    display: flex;
+}
+.answer,.central{
+    align-content: center;
+    display: flex;
+    margin: auto;
+}
+
+.answer{
+    flex-direction: row;
+    padding: 15px,15px;
+    width: 200px;
+    height: 20px;
+    text-align: center;
+}

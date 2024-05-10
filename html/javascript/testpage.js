@@ -1,13 +1,21 @@
 // TO-DO
 //Add Court Cases
-//Add Calculation
-//Fix Wikipedia Button
-//Add Percentage Calculation
-//Add Result Screeen
 //Design Page
-//End Handling
+const electron = require("electron");
+const ipc = electron.ipcRenderer
 
-
+function quickSort(arr){
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr.length - i - 1; j++) {
+            if(arr[j][1] > arr[j + 1][1]){
+                const lesser = arr[j + 1];
+                arr[j + 1] = arr[j];
+                arr[j] = lesser;
+            }
+        }    
+    }
+    return arr.reverse()
+}
 
 //list of all justices
 let justices = {
@@ -147,9 +155,13 @@ let questions = [
 //Inserts the new question into the HTML Document
 function nextQuestion(){
     let current = questions.shift()
+    if(current == undefined){
+        showResult(justices)
+        return 0
+    }
     document.getElementById("headline").innerHTML = current.party1 + " v " + current.party2 + " " + current.year
     document.getElementById("summary").innerHTML = current.summary
-    document.getElementById("wikipedia").setAttribute("href", current.wiki)
+    wikiLink = current.wiki
     document.getElementById("strongParty1").innerHTML = "Strongly " + current.party1
     document.getElementById("Party1").innerHTML = current.party1
     document.getElementById("Party2").innerHTML = current.party2
@@ -159,13 +171,51 @@ function nextQuestion(){
 
 //Calculates Result after every Question
 function calcResult(x, quota){
-
+    for(let i = 0; i < x.party1sup.length; i++){
+        justices[x.party1sup[i]].points += quota
+        justices[x.party1sup[i]].cases += 1
+    }
+    quota = quota *-1
+    for(let i = 0; i < x.party2sup.length; i++){
+        justices[x.party2sup[i]].points += quota
+        justices[x.party2sup[i]].cases += 1
+    }
 }
+
+function showResult(){
+    let rank = []
+    let doc = document.getElementById("main")
+    let justiceNames = Object.keys(justices)
+    doc.innerHTML = "<h1 class=\"headline\">Results</h1><br>"
+    for(let i = 0; i < justiceNames.length; i++){
+        if(justices[justiceNames[i]].cases == 0){
+            continue
+        }else{
+            let maxPoints = justices[justiceNames[i]].cases * 2
+            let percent = justices[justiceNames[i]].points * 100 / maxPoints
+            rank.push([justiceNames[i],percent])
+        }
+    }
+    rank = quickSort(rank)
+    console.log(rank)
+    for(let i = 0; i < rank.length; i++){
+        doc.innerHTML += "<div class=\"justiceElement\"><h2 class=\"justiceName\">"+ rank[i][0] + "<br></h2><h3 class=\"percentages\">"+ rank[i][1] + "%</h3></div><br>"
+    }
+}
+
 //current Question, needed for calculation
 let now 
+
+let wikiLink
 //first Question
 now = nextQuestion()
 
+//Wikipedia Article
+document.getElementById("wikipedia").addEventListener("click", function(){
+    ipc.send("openWiki", wikiLink)
+})
+
+//Answer Options
 document.getElementById("strongParty1").addEventListener("click", function(){
     let x = 2
     calcResult(now, x)
