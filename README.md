@@ -9,5 +9,7 @@ get a result which states which supreme court justice most closely reflects thei
 
 
 I now mostly need help adding supreme court cases and making everything more beautiful.
-To add court cases you just need to open the file testpage.js in any textediting program (though I recommend using notepad++ or vs code) and scroll down to the questions.
+To add court cases you just need to open the file testpage.js and scroll down to the questions you can edit everything online.
 There you can add more cases using the same structure I used for the first one. Thank you for your help!
+
+After 50 added cases and a more polished UI am i going publish the first release for everyone to download and update it regularly
